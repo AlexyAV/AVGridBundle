@@ -25,7 +25,7 @@ So using 9 lines of code you can build something like this
 ## Installation
 install the `GridBundle` executing this console command in your project:
 ```
-$ composer require av/grid-bundle ~1.0
+$ composer require avpretty/grid-bundle
 ```
 Update your `AppKernel.php`:
 ```php
