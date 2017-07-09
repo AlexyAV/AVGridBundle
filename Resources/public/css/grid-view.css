@@ -1,0 +1,18 @@
+.grid-view a.asc:after, a.desc:after {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    padding-left: 5px;
+}
+
+.grid-view a.asc:after {
+    content: "\e155";
+}
+
+.grid-view a.desc:after {
+    content: "\e156";
+}
