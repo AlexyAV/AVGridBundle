@@ -18,5 +18,8 @@
     },
     "autoload": {
         "psr-4": { "AV\\GridBundle\\": "" }
+    },
+    "branch-alias": {
+        "dev-master": "1.0-dev"
     }
 }
