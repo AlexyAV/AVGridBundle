@@ -83,6 +83,11 @@ class Sort
     protected $router;
 
     /**
+     * @var Html
+     */
+    protected $html;
+
+    /**
      * Sort constructor.
      *
      * @param RequestStack $requestStack
@@ -313,7 +318,7 @@ class Sort
             }
         }
 
-        return '<a '.Html::prepareTagAttributes(
+        return '<a '.$this->html->prepareTagAttributes(
             $options
         ).' href="'.$this->createUrl($attribute).'">'.$label.'</a>';
     }
@@ -474,6 +479,18 @@ class Sort
     public function setDefaultOrder(array $defaultOrder)
     {
         $this->defaultOrder = $defaultOrder;
+
+        return $this;
+    }
+
+    /**
+     * @param Html $html
+     *
+     * @return $this
+     */
+    public function setHtml(Html $html)
+    {
+        $this->html = $html;
 
         return $this;
     }

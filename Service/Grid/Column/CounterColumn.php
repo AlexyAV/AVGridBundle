@@ -2,8 +2,6 @@
 
 namespace AV\GridBundle\Service\Grid\Column;
 
-use AV\GridBundle\Service\Helper\Html;
-
 class CounterColumn extends BaseColumn
 {
     /**
@@ -28,7 +26,7 @@ class CounterColumn extends BaseColumn
 
         $index += ($offset + 1);
 
-        return '<td '.Html::prepareTagAttributes(
+        return '<td '.$this->html->prepareTagAttributes(
             $this->contentOptions
         ).'>'. $index .'</td>';
     }

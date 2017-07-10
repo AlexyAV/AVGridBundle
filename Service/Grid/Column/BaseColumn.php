@@ -2,9 +2,9 @@
 
 namespace AV\GridBundle\Service\Grid\Column;
 
-use AV\GridBundle\Service\Grid\Column\Exception\ColumnException;
 use AV\GridBundle\Service\Helper\Html;
 use AV\GridBundle\Service\Grid\GridView;
+use AV\GridBundle\Service\Grid\Column\Exception\ColumnException;
 
 abstract class BaseColumn
 {
@@ -83,6 +83,11 @@ abstract class BaseColumn
     protected $sortable = true;
 
     /**
+     * @var Html
+     */
+    protected $html;
+
+    /**
      * Column constructor.
      *
      * @param ColumnFormat $columnFormat
@@ -116,7 +121,7 @@ abstract class BaseColumn
             );
         }
 
-        return "<th ".Html::prepareTagAttributes(
+        return "<th ".$this->html->prepareTagAttributes(
             $this->headerOptions
         ).">".$headerCellContent."</th>";
     }
@@ -136,7 +141,7 @@ abstract class BaseColumn
      */
     public function renderFilterCellContent()
     {
-        return '<td '.Html::prepareTagAttributes(
+        return '<td '.$this->html->prepareTagAttributes(
             $this->filterOptions
         ).'>'.$this->gridView->getEmptyCell().'</td>';
     }
@@ -251,6 +256,18 @@ abstract class BaseColumn
     public function setSortable($sortable)
     {
         $this->sortable = (bool)$sortable;
+
+        return $this;
+    }
+
+    /**
+     * @param Html $html
+     *
+     * @return $this
+     */
+    public function setHtml(Html $html)
+    {
+        $this->html = $html;
 
         return $this;
     }

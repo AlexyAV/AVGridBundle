@@ -26,6 +26,11 @@ class PaginationView
     protected $queryParameters;
 
     /**
+     * @var Html
+     */
+    protected $html;
+
+    /**
      * @var array Parameter list for the pagination block.
      */
     protected $options = ['class' => 'pagination'];
@@ -209,7 +214,7 @@ class PaginationView
             );
         }
 
-        return '<ul '.Html::prepareTagAttributes($this->options).'>'
+        return '<ul '.$this->html->prepareTagAttributes($this->options).'>'
         .implode("\n", $buttons).'</ul>';
     }
 
@@ -254,11 +259,11 @@ class PaginationView
             );
         }
 
-        $link = '<a '.Html::prepareTagAttributes($linkOptions).' href="'
+        $link = '<a '.$this->html->prepareTagAttributes($linkOptions).' href="'
             .$this->createButtonLink($page, $this->pagination->getPageSize())
             .'">'.$label.'</a>';
 
-        return '<li '.Html::prepareTagAttributes($buttonOptions).'>'.$link
+        return '<li '.$this->html->prepareTagAttributes($buttonOptions).'>'.$link
         .'</li>';
     }
 
@@ -349,5 +354,17 @@ class PaginationView
     public function setLinkOptions(array $linkOptions)
     {
         $this->linkOptions = array_merge($this->linkOptions, $linkOptions);
+    }
+
+    /**
+     * @param Html $html
+     *
+     * @return $this
+     */
+    public function setHtml(Html $html)
+    {
+        $this->html = $html;
+
+        return $this;
     }
 }
