@@ -5,6 +5,9 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="av_grid.html"
+                 class="AV\GridBundle\Service\Helper\Html"/>
+
         <service id="av_grid.column_format"
                  class="AV\GridBundle\Service\Grid\Column\ColumnFormat"/>
 
@@ -12,12 +15,18 @@
                  class="AV\GridBundle\Service\Grid\Column\CounterColumn"
                  shared="false">
             <argument type="service" id="av_grid.column_format"/>
+            <call method="setHtml">
+                <argument type="service" id="av_grid.html"/>
+            </call>
         </service>
 
         <service id="av_grid.column"
                  class="AV\GridBundle\Service\Grid\Column\Column"
                  shared="false">
             <argument type="service" id="av_grid.column_format"/>
+            <call method="setHtml">
+                <argument type="service" id="av_grid.html"/>
+            </call>
         </service>
 
         <service id="av_grid.action_column"
@@ -27,10 +36,16 @@
             <call method="setRequest">
                 <argument type="service" id="request_stack"/>
             </call>
+            <call method="setHtml">
+                <argument type="service" id="av_grid.html"/>
+            </call>
         </service>
 
-        <service id="av_grid.view"
-                 class="AV\GridBundle\Service\Grid\GridView"/>
+        <service id="av_grid.view" class="AV\GridBundle\Service\Grid\GridView">
+            <call method="setHtml">
+                <argument type="service" id="av_grid.html"/>
+            </call>
+        </service>
 
         <service id="av_grid.twig_extension"
                  class="AV\GridBundle\Twig\GridExtension"
@@ -40,20 +55,28 @@
         </service>
 
         <service id="av_grid.pagination"
-                 class="AV\GridBundle\Service\Grid\Pagination\Pagination">
+                 class="AV\GridBundle\Service\Grid\Pagination\Pagination"
+                 shared="false">
             <argument type="service" id="request_stack"/>
         </service>
 
         <service id="av_grid.sort"
-                 class="AV\GridBundle\Service\Grid\Sort\Sort">
+                 class="AV\GridBundle\Service\Grid\Sort\Sort"
+                 shared="false">
             <argument type="service" id="request_stack"/>
             <argument type="service" id="router"/>
+            <call method="setHtml">
+                <argument type="service" id="av_grid.html"/>
+            </call>
         </service>
 
         <service id="av_grid.pagination_view"
                  class="AV\GridBundle\Service\Grid\Pagination\PaginationView">
             <argument type="service" id="request_stack"/>
             <argument type="service" id="router"/>
+            <call method="setHtml">
+                <argument type="service" id="av_grid.html"/>
+            </call>
         </service>
 
         <service id="av_grid.pagination_extension"

@@ -2,12 +2,20 @@
 
 namespace AV\GridBundle\Service\Helper;
 
+use AV\GridBundle\Service\Helper\Exception\HtmlException;
+
 class Html
 {
+    const CLASS_ATTR = 'class';
+
+    const STYLE_ATTR = 'style';
+
+    const DATA_ATTR = 'data';
+
     /**
      * @var array List of [data] type attributes
      */
-    public static $dataAttributes = ['data', 'data-ng', 'ng'];
+    public $dataAttributes = ['data', 'data-ng', 'ng'];
 
     /**
      * Converts list of tag attributes from array to encoded string
@@ -17,57 +25,190 @@ class Html
      *
      * @return string
      */
-    public static function prepareTagAttributes(array $attributes)
+    public function prepareTagAttributes(array $attributes)
     {
         $preparedHtml = '';
 
         foreach ($attributes as $attributeName => $attributeData) {
 
-            if (is_bool($attributeData)) {
-                $preparedHtml .= "$attributeName ";
+            $preparedHtml .= $this->prepareTagAttribute(
+                $attributeName, $attributeData
+            );
+        }
+
+        return trim($preparedHtml);
+    }
+
+    /**
+     * Prepare certain type of attributes.
+     *
+     * @param string $attributeName
+     * @param mixed $attributeData
+     *
+     * @return mixed|string
+     */
+    protected function prepareTagAttribute($attributeName, $attributeData)
+    {
+        if (is_bool($attributeData)) {
+            return $attributeName.' ';
+        }
+
+        $preparedAttribute = '';
+
+        if (is_array($attributeData)) {
+
+            $attributeType = $this->guessAttributeType($attributeName);
+
+            $prepareMethod = 'prepare'.ucfirst($attributeType).'Attribute';
+
+            if (!method_exists($this, $prepareMethod))  {
+                $preparedAttribute .= " $attributeName='"
+                    .$this->encode($attributeData)."' ";
+
+                return $preparedAttribute;
+            }
+
+            return call_user_func_array(
+                [$this, $prepareMethod], [$attributeName, $attributeData]
+            );
+        }
+
+        $preparedAttribute .= " $attributeName=".json_encode($attributeData);
+
+        return $preparedAttribute;
+    }
+
+    /**
+     * Get attribute type.
+     *
+     * @param string $attributeName
+     *
+     * @return bool|string
+     */
+    protected function guessAttributeType($attributeName)
+    {
+        if (in_array($attributeName, $this->dataAttributes)) {
+            return self::DATA_ATTR;
+        }
+
+        if (in_array($attributeName, [self::CLASS_ATTR, self::STYLE_ATTR])) {
+            return $attributeName;
+        }
+
+        return false;
+    }
+
+    /**
+     * Creates string representation of class attribute from array.
+     *
+     * @param string $attributeName
+     * @param array $attributeData
+     *
+     * @return string
+     * @throws HtmlException
+     */
+    protected function prepareClassAttribute(
+        $attributeName, array $attributeData
+    ) {
+        $preparedAttribute = '';
+
+        if (!is_string($attributeName)) {
+            throw new HtmlException(
+                'The expected type of the "attributeName" is string. '
+                .gettype($attributeName).' given.'
+            );
+        }
+
+        $preparedAttribute .= "$attributeName="
+            .$this->encode(implode(' ', $attributeData));
+
+        return $preparedAttribute;
+    }
+
+    /**
+     * Creates string representation of data attribute from array.
+     *
+     * @param string $attributeName
+     * @param array $attributeData
+     *
+     * @return string
+     * @throws HtmlException
+     */
+    protected function prepareDataAttribute(
+        $attributeName,
+        array $attributeData
+    ) {
+        if (!is_string($attributeName)) {
+            throw new HtmlException(
+                'The expected type of the "attributeName" is string. '
+                .gettype($attributeName).' given.'
+            );
+        }
+
+        $preparedAttribute = '';
+
+        foreach ($attributeData as $dataName => $dataValue) {
+
+            if (!is_string($dataName) && !is_numeric($dataName)) {
+                throw new HtmlException(
+                    'Unexpected type of the data attribute name. String or '
+                    .'numeric expected. '.gettype($dataName).' given.'
+                );
+            }
+
+            $preparedAttribute .= " $attributeName-$dataName=";
+
+            if (is_array($dataValue)) {
+                $preparedAttribute .= json_encode($dataValue);
 
                 continue;
             }
 
-            if (is_array($attributeData)) {
-
-                if (in_array($attributeName, static::$dataAttributes)) {
-
-                    foreach ($attributeData as $dataName => $dataValue) {
-
-                        $preparedHtml .= " $attributeName-$dataName=";
-
-                        if (is_array($dataValue)) {
-                            $preparedHtml .= json_encode($dataValue);
-                        } else {
-                            $preparedHtml .= static::encode($dataValue);
-                        }
-                    }
-                } elseif ($attributeName === 'class') {
-                    $preparedHtml .= "$attributeName=" . static::encode(
-                        implode(' ', $attributeData)
-                    );
-                } elseif ($attributeName === 'style') {
-                    $preparedHtml .= " $attributeName=";
-
-                    $styles = [];
-
-                    foreach ($attributeData as $styleName => $styleValue) {
-                        $styles[] = "$styleName: $styleValue";
-                    }
-
-                    $preparedHtml .= static::encode(implode('; ', $styles));
-                } else {
-                    $preparedHtml .= " $attributeName='"
-                        . static::encode($attributeData) . "' ";
-                }
-            } else {
-                $preparedHtml .= " $attributeName="
-                    . json_encode($attributeData);
-            }
+            $preparedAttribute .= $this->encode($dataValue);
         }
 
-        return trim($preparedHtml);
+        return $preparedAttribute;
+    }
+
+    /**
+     * Creates string representation of style attribute from array.
+     *
+     * @param string $attributeName
+     * @param array $attributeData
+     *
+     * @return string
+     * @throws HtmlException
+     */
+    protected function prepareStyleAttribute(
+        $attributeName,
+        array $attributeData
+    ) {
+        if (!is_string($attributeName)) {
+            throw new HtmlException(
+                'The expected type of the "attributeName" is string. '
+                .gettype($attributeName).' given.'
+            );
+        }
+
+        $preparedAttribute = " $attributeName=";
+
+        $styles = [];
+
+        foreach ($attributeData as $styleName => $styleValue) {
+
+            if (!is_string($styleName) || !is_string($styleValue)) {
+                throw new HtmlException(
+                    'The expected type of the style name and style value is a '
+                    .'string. '.gettype($attributeName).' given.'
+                );
+            }
+
+            $styles[] = "$styleName: $styleValue";
+        }
+
+        $preparedAttribute .= $this->encode(implode('; ', $styles));
+
+        return $preparedAttribute;
     }
 
     /**
@@ -77,7 +218,7 @@ class Html
      *
      * @return string
      */
-    public static function encode($data)
+    public function encode($data)
     {
         return json_encode(
             $data,

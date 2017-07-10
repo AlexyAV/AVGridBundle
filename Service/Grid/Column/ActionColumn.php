@@ -2,7 +2,6 @@
 
 namespace AV\GridBundle\Service\Grid\Column;
 
-use AV\GridBundle\Service\Helper\Html;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use AV\GridBundle\Service\Grid\Column\Exception\ActionColumnException;
@@ -107,7 +106,7 @@ class ActionColumn extends BaseColumn
             $buttonsHtml = $emptyCellContent;
         }
 
-        return '<td '.Html::prepareTagAttributes(
+        return '<td '.$this->html->prepareTagAttributes(
             $this->contentOptions
         ).'>'.$buttonsHtml.'</td>';
     }

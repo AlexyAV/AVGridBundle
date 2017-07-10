@@ -94,7 +94,12 @@ class GridView
     /**
      * @var FormBuilder
      */
-    public $formBuilder;
+    protected $formBuilder;
+
+    /**
+     * @var Html
+     */
+    protected $html;
 
     /**
      * Get grid id. If value was not set yet method generates new id based on
@@ -134,7 +139,7 @@ class GridView
             $this->containerOptions['id'] = $this->getId();
         }
 
-        $gridContainerOptions = Html::prepareTagAttributes(
+        $gridContainerOptions = $this->html->prepareTagAttributes(
             $this->containerOptions
         );
 
@@ -148,7 +153,7 @@ class GridView
      */
     protected function renderTable()
     {
-        $tableOptions = Html::prepareTagAttributes($this->tableOptions);
+        $tableOptions = $this->html->prepareTagAttributes($this->tableOptions);
 
         $tableHtml = '<table '.$tableOptions.'>'.$this->renderCaption()
             .$this->renderTableHeader();
@@ -206,7 +211,7 @@ class GridView
         }
 
         $tableHeader = '<thead><tr '
-            .Html::prepareTagAttributes($this->headerRowOptions).' >';
+            .$this->html->prepareTagAttributes($this->headerRowOptions).' >';
 
         /** @var BaseColumn $column */
         foreach ($this->columns as $column) {
@@ -229,7 +234,7 @@ class GridView
 
         $this->filterRowOptions['id'] = $this->getId().'_filters';
 
-        $tableHeader = '<tr '.Html::prepareTagAttributes(
+        $tableHeader = '<tr '.$this->html->prepareTagAttributes(
                 $this->filterRowOptions
             ).'>';
 
@@ -257,7 +262,8 @@ class GridView
      */
     public function renderTableRow($entity, $index)
     {
-        $tableRaw = '<tr '.Html::prepareTagAttributes($this->rowOptions).' >';
+        $tableRaw = '<tr '.$this->html->prepareTagAttributes($this->rowOptions)
+            .' >';
 
         /** @var BaseColumn $column */
         foreach ($this->columns as $column) {
@@ -451,6 +457,18 @@ class GridView
         }
 
         $this->filterUrl = $filterUrl;
+
+        return $this;
+    }
+
+    /**
+     * @param Html $html
+     *
+     * @return $this
+     */
+    public function setHtml(Html $html)
+    {
+        $this->html = $html;
 
         return $this;
     }

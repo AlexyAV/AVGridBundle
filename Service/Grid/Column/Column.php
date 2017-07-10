@@ -2,7 +2,6 @@
 
 namespace AV\GridBundle\Service\Grid\Column;
 
-use AV\GridBundle\Service\Helper\Html;
 use AV\GridBundle\Service\Helper\TextFormat;
 use AV\GridBundle\Service\Grid\Column\Exception\ColumnException;
 
@@ -70,7 +69,7 @@ class Column extends BaseColumn
             return false;
         }
 
-        $this->gridView->formBuilder->add(
+        $this->gridView->getFormBuilder()->add(
             $this->attributeName,
             $this->filterType,
             $this->filterFieldOptions
@@ -88,7 +87,7 @@ class Column extends BaseColumn
             return parent::renderFilterCellContent();
         }
 
-        return '<td '.Html::prepareTagAttributes($this->filterOptions)
+        return '<td '.$this->html->prepareTagAttributes($this->filterOptions)
         .'>{{ form_widget('.$this->gridView->getId().'.'.$this->attributeName
         .') }}</td>';
     }
@@ -245,7 +244,7 @@ class Column extends BaseColumn
             $cellContent = $emptyCellContent;
         }
 
-        return '<td '.Html::prepareTagAttributes(
+        return '<td '.$this->html->prepareTagAttributes(
             $this->contentOptions
         ).'>'.$cellContent.'</td>';
     }

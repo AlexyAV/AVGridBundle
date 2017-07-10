@@ -94,12 +94,7 @@ class GridFactory
             $setterMethodName = 'set'.ucfirst($parameterName);
 
             if (method_exists($this->gridView, $setterMethodName)) {
-
-                if (!is_array($value)) {
-                    $value = [$value];
-                }
-
-                call_user_func_array(
+                call_user_func(
                     [$this->gridView, $setterMethodName],
                     $value
                 );
