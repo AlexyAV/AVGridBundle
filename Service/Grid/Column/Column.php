@@ -50,8 +50,14 @@ class Column extends BaseColumn
 
         $label = $this->label ?: $this->attributeName;
 
-        if ($sort->hasAttribute($label) && $this->sortable) {
-            return $sort->createLink($label);
+        if ($this->sortable) {
+            $sortAttribute = $sort->hasAttribute($label)
+                ? $label : $sort->hasAttribute($this->attributeName)
+                    ? $this->attributeName : null;
+
+            if ($sortAttribute) {
+                return $sort->createLink($sortAttribute);
+            }
         }
 
         return TextFormat::camelCaseToWord($label);
