@@ -48,19 +48,21 @@ class Column extends BaseColumn
 
         $sort = $this->gridView->getDataSource()->getSort();
 
-        $label = $this->label ?: $this->attributeName;
+        $label = $this->label ?: TextFormat::camelCaseToWord(
+            $this->attributeName
+        );
 
         if ($this->sortable) {
-            $sortAttribute = $sort->hasAttribute($label)
+            $sortAttribute = $sort->hasAttribute($this->label)
                 ? $label : $sort->hasAttribute($this->attributeName)
                     ? $this->attributeName : null;
 
             if ($sortAttribute) {
-                return $sort->createLink($sortAttribute);
+                return $sort->createLink($sortAttribute, ['label' => $label]);
             }
         }
 
-        return TextFormat::camelCaseToWord($label);
+        return $label;
     }
 
     /**
