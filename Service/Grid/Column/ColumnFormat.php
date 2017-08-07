@@ -151,7 +151,7 @@ class ColumnFormat
      */
     protected function htmlFormat($data)
     {
-        return "{{ '".$data."'|escape('html') }}";
+        return "{{ '".addslashes($data)."'|escape('html') }}";
     }
 
     /**

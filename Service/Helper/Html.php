@@ -63,7 +63,7 @@ class Html
 
             if (!method_exists($this, $prepareMethod))  {
                 $preparedAttribute .= " $attributeName='"
-                    .$this->encode($attributeData)."' ";
+                    .$this->jsonEncode($attributeData)."' ";
 
                 return $preparedAttribute;
             }
@@ -120,7 +120,7 @@ class Html
         }
 
         $preparedAttribute .= "$attributeName="
-            .$this->encode(implode(' ', $attributeData));
+            .$this->jsonEncode(implode(' ', $attributeData));
 
         return $preparedAttribute;
     }
@@ -164,7 +164,7 @@ class Html
                 continue;
             }
 
-            $preparedAttribute .= $this->encode($dataValue);
+            $preparedAttribute .= $this->jsonEncode($dataValue);
         }
 
         return $preparedAttribute;
@@ -206,7 +206,7 @@ class Html
             $styles[] = "$styleName: $styleValue";
         }
 
-        $preparedAttribute .= $this->encode(implode('; ', $styles));
+        $preparedAttribute .= $this->jsonEncode(implode('; ', $styles));
 
         return $preparedAttribute;
     }
@@ -218,7 +218,7 @@ class Html
      *
      * @return string
      */
-    public function encode($data)
+    public function jsonEncode($data)
     {
         return json_encode(
             $data,
