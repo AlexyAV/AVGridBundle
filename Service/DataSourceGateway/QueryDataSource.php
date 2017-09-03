@@ -34,10 +34,14 @@ class QueryDataSource extends BaseDataSource
 
     /**
      * @param QueryBuilder $queryBuilder
+     *
+     * @return $this
      */
     public function setDataSource(QueryBuilder $queryBuilder)
     {
         $this->dataSource = $queryBuilder;
+
+        return $this;
     }
 
     /**
